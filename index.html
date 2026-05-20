@@ -1,0 +1,393 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+#app{font-family:'Inter',system-ui,sans-serif;background:#f8fafc;padding:28px 20px;color:#1e293b}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:22px 26px;margin-bottom:16px}
+.card:focus-within{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.08)}
+.hdr{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 26px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.logo{width:42px;height:42px;border-radius:10px;background:#6366f1;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.badge-v{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:#64748b}
+.badge-sync{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:100px;padding:4px 12px;font-size:11px;font-weight:600;color:#059669;display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:#10b981;animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;text-align:center}
+.stat-n{font-size:1.5rem;font-weight:700;color:#6366f1;line-height:1}
+.stat-l{font-size:11px;color:#94a3b8;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.sec-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#94a3b8;margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.sec-icon{width:20px;height:20px;border-radius:5px;background:#eef2ff;display:flex;align-items:center;justify-content:center}
+.grid-layout{display:grid;grid-template-columns:1fr 340px;gap:18px}
+.tbl-head{display:grid;grid-template-columns:32px 1.5fr .9fr 1fr 1.6fr;gap:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#94a3b8;padding:0 8px 10px;border-bottom:1px solid #f1f5f9}
+.fee-row{display:grid;grid-template-columns:32px 1.5fr .9fr 1fr 1.6fr;gap:10px;align-items:start;padding:11px 8px;border-bottom:1px solid #f8fafc;border-radius:8px;transition:background .15s}
+.fee-row:hover{background:#fafbff}
+.inp,.sel{width:100%;background:#fff;border:1px solid #e2e8f0;color:#1e293b;font-size:13px;padding:7px 11px;border-radius:7px;outline:none;font-family:inherit;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
+.inp::placeholder{color:#cbd5e1}
+.inp:focus,.sel:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.1)}
+.sel option{background:#fff;color:#1e293b}
+.m-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:8px;margin-top:5px}
+.m-item{font-size:11px;color:#64748b;display:flex;align-items:center;gap:4px;padding:2px;cursor:pointer}
+.m-item input{accent-color:#6366f1}
+.btn-rm{width:28px;height:28px;border-radius:6px;background:transparent;border:1px solid #fca5a5;color:#ef4444;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .15s}
+.btn-rm:hover{background:#fef2f2;border-color:#ef4444}
+.btn-add{width:100%;margin-top:10px;background:#fff;border:1px dashed #c7d2fe;color:#6366f1;padding:9px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-add:hover{background:#eef2ff;border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;border:none;border-radius:10px;background:#6366f1;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.1px}
+.btn-gen:hover{background:#4f46e5;transform:translateY(-1px)}
+.btn-gen:active{transform:translateY(0)}
+.btn-cp{width:100%;padding:11px;border-radius:8px;background:#fff;border:1px solid #e2e8f0;color:#475569;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:10px}
+.btn-cp:hover{background:#f8fafc;border-color:#94a3b8}
+.kw-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kw-lbl{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.sync-row{display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:12px 16px;margin-top:12px}
+.sync-lbl{font-size:13px;color:#64748b}
+.tog-wrap{position:relative;display:inline-block;width:38px;height:21px}
+.tog-wrap input{display:none}
+.tog-sl{position:absolute;inset:0;border-radius:100px;background:#e2e8f0;cursor:pointer;transition:background .2s}
+.tog-wrap input:checked+.tog-sl{background:#6366f1}
+.tog-sl::before{content:'';position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s}
+.tog-wrap input:checked+.tog-sl::before{transform:translateX(17px)}
+.term-wrap{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden}
+.term-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:9px 14px;display:flex;align-items:center;gap:7px}
+.tdot{width:9px;height:9px;border-radius:50%}
+.term-out{width:100%;height:300px;background:transparent;color:#334155;border:none;outline:none;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;resize:none}
+.guide-item{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;font-size:13px;color:#64748b;line-height:1.5}
+.guide-num{background:#eef2ff;color:#6366f1;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px}
+.step-row{display:flex;gap:8px;margin-bottom:16px}
+.step-chip{flex:1;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;display:flex;align-items:center;gap:9px;cursor:pointer;transition:all .2s}
+.step-chip.active,.step-chip:hover{background:#eef2ff;border-color:#c7d2fe}
+.step-n{width:24px;height:24px;border-radius:6px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#94a3b8;flex-shrink:0}
+.step-chip.active .step-n{background:#6366f1;color:#fff}
+.step-t{font-size:11px;font-weight:500;color:#94a3b8}
+.step-chip.active .step-t{color:#4338ca}
+.hidden{display:none!important}
+@media(max-width:740px){.grid-layout{grid-template-columns:1fr}.step-row{display:none}.tbl-head,.fee-row{grid-template-columns:32px 1fr 1fr}}
+</style>
+
+<div id="app">
+
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="logo"><i class="ti ti-terminal-2" style="font-size:20px;color:#fff" aria-hidden="true"></i></div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:#1e293b;letter-spacing:-.3px">ERP Fee Automation Studio</div>
+        <div style="font-size:12px;color:#94a3b8;margin-top:2px">Position-Agnostic Header Matrix · v47</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span id="syncBadge" class="badge-sync hidden"><span class="dot"></span>Auto-sync on</span>
+      <span class="badge-v">Tampermonkey</span>
+    </div>
+  </div>
+
+  <div class="step-row">
+    <div class="step-chip active"><div class="step-n">1</div><div class="step-t">Fee columns</div></div>
+    <div class="step-chip"><div class="step-n">2</div><div class="step-t">Excel data</div></div>
+    <div class="step-chip"><div class="step-n">3</div><div class="step-t">Hooks</div></div>
+    <div class="step-chip"><div class="step-n">4</div><div class="step-t">Compile</div></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="statCols">0</div><div class="stat-l">Fee columns</div></div>
+    <div class="stat"><div class="stat-n" id="statClasses">0</div><div class="stat-l">Classes loaded</div></div>
+    <div class="stat"><div class="stat-n" id="statLines">0</div><div class="stat-l">Script lines</div></div>
+  </div>
+
+  <div class="grid-layout">
+    <div>
+      <div class="card">
+        <div class="sec-lbl"><div class="sec-icon"><i class="ti ti-layers-subtract" style="font-size:11px;color:#6366f1" aria-hidden="true"></i></div>Step 1 — Fee column rules</div>
+        <div class="tbl-head"><span></span><span>ERP header label</span><span>Excel col</span><span>Rule</span><span>Parameters</span></div>
+        <div id="col-list"></div>
+        <button class="btn-add" onclick="addRow()"><i class="ti ti-plus" style="font-size:13px;vertical-align:-1px" aria-hidden="true"></i> Append fee rule</button>
+      </div>
+
+      <div class="card">
+        <div class="sec-lbl"><div class="sec-icon"><i class="ti ti-table" style="font-size:11px;color:#6366f1" aria-hidden="true"></i></div>Step 2 — Excel data stream</div>
+        <textarea id="excelInput" class="inp" rows="4" style="resize:vertical;height:100px" placeholder="Class Name&#9;Tuition Fee&#9;Admission Fee&#10;I&#9;2000&#9;1500&#10;II&#9;2200&#9;1600" oninput="onDataChange()"></textarea>
+      </div>
+
+      <div class="card">
+        <div class="sec-lbl"><div class="sec-icon"><i class="ti ti-adjustments-horizontal" style="font-size:11px;color:#6366f1" aria-hidden="true"></i></div>Step 3 — Isolation hooks</div>
+        <div class="kw-grid">
+          <div>
+            <div class="kw-lbl"><span style="width:6px;height:6px;border-radius:50%;background:#f97316;display:inline-block"></span>OLD keyword</div>
+            <input type="text" id="oldKeyword" class="inp" value="FOR OLD STUDENTS" oninput="onDataChange()">
+          </div>
+          <div>
+            <div class="kw-lbl"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block"></span>NEW keyword</div>
+            <input type="text" id="newKeyword" class="inp" value="FOR NEW STUDENTS" oninput="onDataChange()">
+          </div>
+        </div>
+        <div class="sync-row">
+          <span class="sync-lbl"><i class="ti ti-refresh" style="font-size:14px;vertical-align:-2px;margin-right:5px;color:#6366f1" aria-hidden="true"></i>Real-time code compilation</span>
+          <label class="tog-wrap"><input type="checkbox" id="autoRegen" checked onchange="toggleRegen()"><span class="tog-sl"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <button class="btn-gen" onclick="generateScript(true)">
+        <i class="ti ti-rocket" style="font-size:15px;vertical-align:-2px;margin-right:6px" aria-hidden="true"></i>Compile code matrix
+      </button>
+
+      <div id="result-section" class="hidden">
+        <div class="sec-lbl" style="color:#6366f1;margin-bottom:8px"><div class="sec-icon"><i class="ti ti-terminal-2" style="font-size:11px;color:#6366f1" aria-hidden="true"></i></div>Production script</div>
+        <div class="term-wrap">
+          <div class="term-bar">
+            <span class="tdot" style="background:#ef4444"></span>
+            <span class="tdot" style="background:#f59e0b"></span>
+            <span class="tdot" style="background:#10b981"></span>
+            <span style="font-size:10px;color:#94a3b8;margin-left:8px;font-family:'JetBrains Mono',monospace">ERP_Fee_Filler_v60.js</span>
+          </div>
+          <textarea class="term-out" id="scriptOutput" readonly spellcheck="false"></textarea>
+        </div>
+        <button class="btn-cp" id="copyBtn" onclick="copyScript()">
+          <i class="ti ti-copy" style="font-size:13px;vertical-align:-2px;margin-right:5px" aria-hidden="true"></i>Copy compilation matrix
+        </button>
+      </div>
+
+      <div class="card" id="guide-card">
+        <div class="sec-lbl"><div class="sec-icon"><i class="ti ti-info-circle" style="font-size:11px;color:#6366f1" aria-hidden="true"></i></div>Quick guide</div>
+        <div class="guide-item"><span class="guide-num">1</span>Add fee columns with ERP header labels matching your ERP table</div>
+        <div class="guide-item"><span class="guide-num">2</span>Paste tab-separated Excel data (copy direct from spreadsheet)</div>
+        <div class="guide-item"><span class="guide-num">3</span>Set OLD / NEW section anchor keywords used in your ERP</div>
+        <div class="guide-item"><span class="guide-num">4</span>Compile and paste into Tampermonkey as a new script</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let colCount=0;
+const MONTHS=['April','May','June','July','August','September','October','November','December','January','February','March'];
+
+window.addEventListener('DOMContentLoaded',()=>{addRow();toggleRegen()});
+
+function addRow(){
+  colCount++;
+  const list=document.getElementById('col-list');
+  const row=document.createElement('div');
+  row.className='fee-row';row.id='row-'+colCount;
+  const mBoxes=MONTHS.map(m=>`<label class="m-item"><input type="checkbox" value="${m}" class="m-chk" onchange="onDataChange()"> ${m.slice(0,3)}</label>`).join('');
+  row.innerHTML=`
+    <div><button class="btn-rm" onclick="removeRow(${colCount})" aria-label="Remove row"><i class="ti ti-trash" style="font-size:12px" aria-hidden="true"></i></button></div>
+    <div><input type="text" class="inp erp-label" placeholder="e.g. Tuition Fee" oninput="onDataChange()"></div>
+    <div><input type="text" class="inp excel-col" placeholder="Col ${colCount}" oninput="onDataChange()"></div>
+    <div><select class="sel rule-sel" onchange="handleRule(${colCount});onDataChange()">
+      <option value="all">All months</option>
+      <option value="new_april">New · April</option>
+      <option value="old_april">Old · April</option>
+      <option value="custom">Custom</option>
+    </select></div>
+    <div>
+      <div id="cp-${colCount}" class="hidden">
+        <select class="sel type-sel" onchange="onDataChange()" style="margin-bottom:5px">
+          <option value="both">Both panels</option>
+          <option value="new">NEW only</option>
+          <option value="old">OLD only</option>
+        </select>
+        <div class="m-grid">${mBoxes}</div>
+      </div>
+      <span id="dt-${colCount}" style="font-size:12px;color:#94a3b8;padding-top:5px;display:inline-block">Standard rule</span>
+    </div>`;
+  list.appendChild(row);onDataChange();
+}
+
+function removeRow(id){const r=document.getElementById('row-'+id);if(r){r.remove();onDataChange();}}
+
+function handleRule(id){
+  const v=document.querySelector('#row-'+id+' .rule-sel').value;
+  const cp=document.getElementById('cp-'+id);
+  const dt=document.getElementById('dt-'+id);
+  if(v==='custom'){cp.classList.remove('hidden');dt.classList.add('hidden');}
+  else{cp.classList.add('hidden');dt.classList.remove('hidden');}
+}
+
+function onDataChange(){updateStats();if(document.getElementById('autoRegen').checked)generateScript(false);}
+
+function updateStats(){
+  let c=0;document.querySelectorAll('.erp-label').forEach(x=>{if(x.value.trim())c++;});
+  document.getElementById('statCols').textContent=c;
+  const raw=document.getElementById('excelInput').value.trim();
+  document.getElementById('statClasses').textContent=raw?raw.split('\n').filter(l=>l.trim()).length:0;
+  const out=document.getElementById('scriptOutput').value;
+  document.getElementById('statLines').textContent=out?out.split('\n').length:0;
+}
+
+function toggleRegen(){
+  const on=document.getElementById('autoRegen').checked;
+  document.getElementById('syncBadge').classList.toggle('hidden',!on);
+  if(on)generateScript(false);
+}
+
+function copyScript(){
+  const out=document.getElementById('scriptOutput');
+  out.select();document.execCommand('copy');
+  const btn=document.getElementById('copyBtn');
+  btn.innerHTML='<i class="ti ti-check" style="font-size:13px;vertical-align:-2px;margin-right:5px;color:#10b981" aria-hidden="true"></i>Copied successfully!';
+  btn.style.color='#059669';btn.style.borderColor='#a7f3d0';
+  setTimeout(()=>{btn.innerHTML='<i class="ti ti-copy" style="font-size:13px;vertical-align:-2px;margin-right:5px" aria-hidden="true"></i>Copy compilation matrix';btn.style.color='';btn.style.borderColor='';},2000);
+}
+
+function generateScript(userTrig){
+  const raw=document.getElementById('excelInput').value.trim();
+  if(!raw){if(userTrig)alert('Excel data stream is empty.');return;}
+  const cfgs=[];
+  document.querySelectorAll('.fee-row').forEach(row=>{
+    const lbl=row.querySelector('.erp-label').value.trim();
+    if(!lbl)return;
+    cfgs.push({erpLabel:lbl,rule:row.querySelector('.rule-sel').value,type:row.querySelector('.type-sel')?.value||'both',months:[...row.querySelectorAll('.m-chk:checked')].map(c=>c.value)});
+  });
+  const feeData={};
+  raw.split('\n').forEach(line=>{
+    const cols=line.split('\t');const cls=cols[0]?.trim();if(!cls)return;
+    feeData[cls]={};
+    cfgs.forEach((cfg,i)=>{feeData[cls][cfg.erpLabel]={val:parseFloat(cols[i+1])||0,rule:cfg.rule,type:cfg.type,months:cfg.months};});
+  });
+  const oldK=document.getElementById('oldKeyword').value;
+  const newK=document.getElementById('newKeyword').value;
+  const script=`// ==UserScript==
+// @name         ERP Fee Filler v60 FINAL
+// @namespace    http://tampermonkey.net/
+// @version      60.0
+// @description  Exact Header Based ERP Fee Filler
+// @match        *://*/*
+// @grant        none
+// ==/UserScript==
+
+(function () {
+    'use strict';
+
+    const FEE_DATA = ${JSON.stringify(feeData,null,4)};
+
+    const MONTHS = [
+        'April','May','June','July','August','September',
+        'October','November','December','January','February','March'
+    ];
+
+    function cleanText(txt) {
+        return (txt || '')
+            .replace(/[\\u00A0\\u200B\\u200C\\u200D\\uFEFF]/g, ' ')
+            .replace(/\\s+/g, ' ').trim();
+    }
+
+    function setInputValue(input, value) {
+        if (!input) return;
+        try {
+            const ns = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
+            ns.call(input, value);
+        } catch(e) { input.value = value; }
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    function getPanel(type) {
+        const keyword = type === 'OLD' ? '${oldK}' : '${newK}';
+        for (const el of [...document.querySelectorAll('*')]) {
+            if (cleanText(el.innerText || '').includes(keyword)) {
+                let p = el;
+                for (let i = 0; i < 10; i++) {
+                    if (p && p.querySelector('table')) return p;
+                    p = p.parentElement;
+                }
+            }
+        }
+        return null;
+    }
+
+    function getHeaderMap(panel) {
+        const map = {};
+        const allowed = Object.keys(FEE_DATA[Object.keys(FEE_DATA)[0]] || {});
+        [...panel.querySelectorAll('tr')].forEach(row => {
+            [...row.querySelectorAll('th,td')].forEach((cell, idx) => {
+                const txt = cleanText(cell.innerText);
+                if (allowed.includes(txt)) map[txt] = idx;
+            });
+        });
+        return map;
+    }
+
+    function fillFees(type, className) {
+        const panel = getPanel(type);
+        if (!panel) { alert(type + ' panel not found'); return; }
+        const classData = FEE_DATA[className];
+        if (!classData) { alert('Class data not found'); return; }
+        const headerMap = getHeaderMap(panel);
+        [...panel.querySelectorAll('tr')].forEach(row => {
+            const fc = row.querySelector('td');
+            if (!fc) return;
+            const month = cleanText(fc.innerText);
+            if (!MONTHS.includes(month)) return;
+            const cells = [...row.children];
+            Object.entries(classData).forEach(([feeName, cfg]) => {
+                const colIdx = headerMap[feeName];
+                if (colIdx === undefined) return;
+                const td = cells[colIdx];if (!td) return;
+                let amount = '';
+                if (cfg.rule === 'all') amount = cfg.val;
+                else if (cfg.rule === 'new_april' && type === 'NEW' && month === 'April') amount = cfg.val;
+                else if (cfg.rule === 'old_april' && type === 'OLD' && month === 'April') amount = cfg.val;
+                else if (cfg.rule === 'custom' && cfg.months.includes(month)) {
+                    if (cfg.type==='both'||(cfg.type==='new'&&type==='NEW')||(cfg.type==='old'&&type==='OLD')) amount = cfg.val;
+                }
+                const inputs = [...td.querySelectorAll('input')];
+                const cb = inputs.find(i=>i.type==='checkbox');
+                const ti = inputs.find(i=>i.type!=='checkbox');
+                if (cb) { cb.checked = amount!==''; cb.dispatchEvent(new Event('change',{bubbles:true})); }
+                if (ti) setInputValue(ti, amount);
+            });
+        });
+        alert(type + ' Fees Filled Successfully');
+    }
+
+    function askClass(type) {
+        const old = document.getElementById('erp-popup');if (old) old.remove();
+        const popup = document.createElement('div');
+        popup.id = 'erp-popup';
+        Object.assign(popup.style,{
+            position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',
+            background:'#fff',padding:'24px',width:'280px',borderRadius:'14px',
+            boxShadow:'0 20px 40px rgba(0,0,0,0.12)',border:'1px solid #e2e8f0',
+            zIndex:'999999',fontFamily:'system-ui,sans-serif',color:'#1e293b'
+        });
+        popup.innerHTML=
+            '<div style="font-weight:700;font-size:15px;margin-bottom:14px;text-align:center">'+type+' selection</div>'+
+            '<select id="erp-class" style="width:100%;padding:10px;margin-bottom:16px;border-radius:8px;background:#fff;border:1px solid #e2e8f0;color:#1e293b;font-size:13px">'+
+            Object.keys(FEE_DATA).map(c=>'<option>'+c+'</option>').join('')+
+            '</select>'+
+            '<div style="display:flex;gap:10px">'+
+            '<button id="erp-fill" style="flex:1;padding:10px;border:none;border-radius:8px;background:#6366f1;color:#fff;font-weight:700;cursor:pointer;font-size:13px">Execute fill</button>'+
+            '<button id="erp-cancel" style="flex:1;padding:10px;border:none;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;color:#64748b;cursor:pointer;font-size:13px">Cancel</button>'+
+            '</div>';
+        document.body.appendChild(popup);
+        document.getElementById('erp-fill').onclick=()=>{fillFees(type,document.getElementById('erp-class').value);popup.remove();};
+        document.getElementById('erp-cancel').onclick=()=>popup.remove();
+    }
+
+    function createButton(text, bg, right) {
+        const btn = document.createElement('div');
+        btn.innerText = text;
+        Object.assign(btn.style,{
+            position:'fixed',bottom:'24px',right:right,width:'54px',height:'54px',
+            borderRadius:'10px',background:bg,color:'#fff',
+            display:'flex',alignItems:'center',justifyContent:'center',
+            fontWeight:'700',fontSize:'12px',cursor:'pointer',zIndex:999999,
+            boxShadow:'0 6px 16px rgba(0,0,0,0.12)',fontFamily:'system-ui,sans-serif',
+            transition:'transform 0.2s'
+        });
+        btn.onmouseover=()=>btn.style.transform='translateY(-2px)';
+        btn.onmouseout=()=>btn.style.transform='none';
+        btn.onclick=()=>askClass(text);
+        document.body.appendChild(btn);
+    }
+
+    createButton('OLD','#64748b','90px');
+    createButton('NEW','#6366f1','24px');
+})();`;
+  document.getElementById('scriptOutput').value=script;
+  document.getElementById('result-section').classList.remove('hidden');
+  document.getElementById('guide-card').classList.add('hidden');
+  updateStats();
+  if(userTrig)document.getElementById('result-section').scrollIntoView({behavior:'smooth'});
+}
+</script>
