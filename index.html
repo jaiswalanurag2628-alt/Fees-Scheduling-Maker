@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ERP Fee Automation Studio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+#app{font-family:'Inter',system-ui,sans-serif;background:#f8fafc;padding:28px 20px;color:#1e293b}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:22px 26px;margin-bottom:16px}
+.card:focus-within{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.08)}
+.hdr{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 26px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.logo{width:42px;height:42px;border-radius:10px;background:#6366f1;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.badge-v{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:#64748b}
+.badge-sync{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:100px;padding:4px 12px;font-size:11px;font-weight:600;color:#059669;display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:#10b981;animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;text-align:center}
+.stat-n{font-size:1.5rem;font-weight:700;color:#6366f1;line-height:1}
+.stat-l{font-size:11px;color:#94a3b8;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.sec-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#94a3b8;margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.sec-icon{width:20px;height:20px;border-radius:5px;background:#eef2ff;display:flex;align-items:center;justify-content:center}
+.grid-layout{display:grid;grid-template-columns:1fr 340px;gap:18px}
+.tbl-head{display:grid;grid-template-columns:32px 1.5fr .9fr 1fr 1.6fr;gap:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#94a3b8;padding:0 8px 10px;border-bottom:1px solid #f1f5f9}
+.fee-row{display:grid;grid-template-columns:32px 1.5fr .9fr 1fr 1.6fr;gap:10px;align-items:start;padding:11px 8px;border-bottom:1px solid #f8fafc;border-radius:8px;transition:background .15s}
+.fee-row:hover{background:#fafbff}
+.inp,.sel{width:100%;background:#fff;border:1px solid #e2e8f0;color:#1e293b;font-size:13px;padding:7px 11px;border-radius:7px;outline:none;font-family:inherit;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
+.inp::placeholder{color:#cbd5e1}
+.inp:focus,.sel:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.1)}
+.sel option{background:#fff;color:#1e293b}
+.m-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:8px;margin-top:5px}
+.m-item{font-size:11px;color:#64748b;display:flex;align-items:center;gap:4px;padding:2px;cursor:pointer}
+.m-item input{accent-color:#6366f1}
+.btn-rm{width:28px;height:28px;border-radius:6px;background:transparent;border:1px solid #fca5a5;color:#ef4444;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .15s}
+.btn-rm:hover{background:#fef2f2;border-color:#ef4444}
+.btn-add{width:100%;margin-top:10px;background:#fff;border:1px dashed #c7d2fe;color:#6366f1;padding:9px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-add:hover{background:#eef2ff;border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;border:none;border-radius:10px;background:#6366f1;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.1px}
+.btn-gen:hover{background:#4f46e5;transform:translateY(-1px)}
+.btn-gen:active{transform:translateY(0)}
+.btn-cp{width:100%;padding:11px;border-radius:8px;background:#fff;border:1px solid #e2e8f0;color:#475569;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:10px}
+.btn-cp:hover{background:#f8fafc;border-color:#94a3b8}
+.kw-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kw-lbl{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.sync-row{display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:12px 16px;margin-top:12px}
+.sync-lbl{font-size:13px;color:#64748b}
+.tog-wrap{position:relative;display:inline-block;width:38px;height:21px}
+.tog-wrap input{display:none}
+.tog-sl{position:absolute;inset:0;border-radius:100px;background:#e2e8f0;cursor:pointer;transition:background .2s}
+.tog-wrap input:checked+.tog-sl{background:#6366f1}
+.tog-sl::before{content:'';position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s}
+.tog-wrap input:checked+.tog-sl::before{transform:translateX(17px)}
+.term-wrap{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden}
+.term-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:9px 14px;display:flex;align-items:center;gap:7px}
+.tdot{width:9px;height:9px;border-radius:50%}
+.term-out{width:100%;height:300px;background:transparent;color:#334155;border:none;outline:none;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;resize:none}
+.guide-item{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;font-size:13px;color:#64748b;line-height:1.5}
+.guide-num{background:#eef2ff;color:#6366f1;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px}
+.step-row{display:flex;gap:8px;margin-bottom:16px}
+.step-chip{flex:1;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;display:flex;align-items:center;gap:9px;cursor:pointer;transition:all .2s}
+.step-chip.active,.step-chip:hover{background:#eef2ff;border-color:#c7d2fe}
+.step-n{width:24px;height:24px;border-radius:6px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#94a3b8;flex-shrink:0}
+.step-chip.active .step-n{background:#6366f1;color:#fff}
+.step-t{font-size:11px;font-weight:500;color:#94a3b8}
+.step-chip.active .step-t{color:#4338ca}
+.hidden{display:none!important}
+.btn-import{background:#10b981;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:background .2s;}
+.btn-import:hover{background:#059669}
+@media(max-width:740px){.grid-layout{grid-template-columns:1fr}.step-row{display:none}.tbl-head,.fee-row{grid-template-columns:32px 1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="logo"><span style="font-size:20px;color:#fff;font-weight:bold">&lt;/&gt;</span></div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:#1e293b;letter-spacing:-.3px">ERP Fee Automation Studio</div>
+        <div style="font-size:12px;color:#94a3b8;margin-top:2px">Duplicate Label Resolution Engine · v61</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span id="syncBadge" class="badge-sync hidden"><span class="dot"></span>Auto-sync on</span>
+      <span class="badge-v">Tampermonkey</span>
+    </div>
+  </div>
+
+  <div class="step-row">
+    <div class="step-chip active"><div class="step-n">1</div><div class="step-t">Bulk Importer</div></div>
+    <div class="step-chip"><div class="step-n">2</div><div class="step-t">Fee rules</div></div>
+    <div class="step-chip"><div class="step-n">3</div><div class="step-t">Excel Stream</div></div>
+    <div class="step-chip"><div class="step-n">4</div><div class="step-t">Compile</div></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="statCols">0</div><div class="stat-l">Fee columns</div></div>
+    <div class="stat"><div class="stat-n" id="statClasses">0</div><div class="stat-l">Classes loaded</div></div>
+    <div class="stat"><div class="stat-n" id="statLines">0</div><div class="stat-l">Script lines</div></div>
+  </div>
+
+  <div class="grid-layout">
+    <div>
+      <div class="card">
+        <div class="sec-lbl"><div class="sec-icon">📅</div>Step 0 — Installment Timeline Setup</div>
+        <div style="display:grid;grid-template-columns: 200px 1fr; gap: 15px; align-items: start;">
+          <div>
+            <div class="kw-lbl">Timeline Model</div>
+            <select id="instModel" class="sel" onchange="handleInstallmentModelChange()">
+              <option value="default">April to March (Default)</option>
+              <option value="custom">Custom Installment Plan</option>
+            </select>
+          </div>
+          <div id="customInstWrapper" class="hidden">
+            <div class="kw-lbl">Custom Terms / Installments (Comma separated)</div>
+            <input type="text" id="customInstInput" class="inp" value="Quarter-1, Quarter-2, Quarter-3, Quarter-4" oninput="onCustomTimelineInput()">
+            <span style="font-size:11px; color:#94a3b8; margin-top:4px; display:inline-block;">Type custom row names exactly as they appear in your ERP system table.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="background: #fafbff; border: 1px dashed #6366f1;">
+        <div class="sec-lbl" style="color: #4f46e5;"><div class="sec-icon" style="background: #eef2ff;">📊</div>Direct Quick Import (From Setup Excel)</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <textarea id="excelConfigImport" class="inp" rows="2" style="height: 65px; font-family: monospace; font-size: 11px;" placeholder="Paste columns directly from Excel here:&#10;[ERP Label]	[Excel Col Label]	[Rule Type: all/new_first/old_first/custom]	[Custom Months (if any)]"></textarea>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 11px; color:#64748b;">Accepts clean copy-paste rows straight from your spreadsheet configuration sheets.</span>
+            <button class="btn-import" onclick="processExcelConfigImport()">⚡ Process Layout Sheet</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec-lbl"><div class="sec-icon">📑</div>Step 1 — Fee column rules</div>
+        <div class="tbl-head"><span></span><span>ERP header label</span><span>Excel col</span><span>Rule</span><span>Parameters</span></div>
+        <div id="col-list"></div>
+        <button class="btn-add" onclick="addRow()"><i class="ti ti-plus" style="font-size:13px;vertical-align:-1px" aria-hidden="true"></i> Append fee rule</button>
+      </div>
+
+      <div class="card">
+        <div class="sec-lbl"><div class="sec-icon">📊</div>Step 2 — Excel data stream</div>
+        <textarea id="excelInput" class="inp" rows="4" style="resize:vertical;height:100px" placeholder="Class Name&#9;Tuition Fee&#9;Admission Fee&#10;I&#9;2000&#9;1500&#10;II&#9;2200&#9;1600" oninput="onDataChange()"></textarea>
+      </div>
+
+      <!-- Hidden hooks since index mapping is now permanent and absolute -->
+      <div class="card hidden">
+        <input type="text" id="oldKeyword" value="OLD">
+        <input type="text" id="newKeyword" value="NEW">
+        <input type="checkbox" id="autoRegen" checked>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <button class="btn-gen" onclick="generateScript(true)">
+        🚀 Compile code matrix
+      </button>
+
+      <div id="result-section" class="hidden">
+        <div class="sec-lbl" style="color:#6366f1;margin-bottom:8px"><div class="sec-icon">💻</div>Production script</div>
+        <div class="term-wrap">
+          <div class="term-bar">
+            <span class="tdot" style="background:#ef4444"></span>
+            <span class="tdot" style="background:#f59e0b"></span>
+            <span class="tdot" style="background:#10b981"></span>
+            <span style="font-size:10px;color:#94a3b8;margin-left:8px;font-family:'JetBrains Mono',monospace">ERP_Fee_Filler_v61.js</span>
+          </div>
+          <textarea class="term-out" id="scriptOutput" readonly spellcheck="false"></textarea>
+        </div>
+        <button class="btn-cp" id="copyBtn" onclick="copyScript()">
+          📋 Copy compilation matrix
+        </button>
+      </div>
+
+      <div class="card" id="guide-card">
+        <div class="sec-lbl"><div class="sec-icon">ℹ️</div>Quick guide</div>
+        <div class="guide-item"><span class="guide-num">⚡</span><strong>Absolute Isolation:</strong> Table 1 is permanently assigned to OLD, Table 2 to NEW. Cross-filling is structurally impossible.</div>
+        <div class="guide-item"><span class="guide-num">0</span>Choose default April-March timeline or map custom installation terms.</div>
+        <div class="guide-item"><span class="guide-num">1</span>Add fee columns with ERP header labels matching your ERP table.</div>
+        <div class="guide-item"><span class="guide-num">2</span>Paste tab-separated Excel data (copy direct from spreadsheet).</div>
+        <div class="guide-item"><span class="guide-num">3</span>Compile and paste into Tampermonkey as a new script.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let colCount=0;
+let CURRENT_TIMELINE = ['April','May','June','July','August','September','October','November','December','January','February','March'];
+const DEFAULT_MONTHS = [...CURRENT_TIMELINE];
+
+window.addEventListener('DOMContentLoaded',()=>{
+  buildInstallmentTimeline();
+  addRow();
+});
+
+function handleInstallmentModelChange() {
+  const model = document.getElementById('instModel').value;
+  const wrapper = document.getElementById('customInstWrapper');
+  if(model === 'custom') {
+    wrapper.classList.remove('hidden');
+  } else {
+    wrapper.classList.add('hidden');
+  }
+  buildInstallmentTimeline();
+  refreshAllRowDropdowns();
+  onDataChange();
+}
+
+function onCustomTimelineInput() {
+  buildInstallmentTimeline();
+  refreshAllRowDropdowns();
+  onDataChange();
+}
+
+function buildInstallmentTimeline() {
+  const model = document.getElementById('instModel').value;
+  if (model === 'default') {
+    CURRENT_TIMELINE = [...DEFAULT_MONTHS];
+  } else {
+    const rawVal = document.getElementById('customInstInput').value;
+    CURRENT_TIMELINE = rawVal.split(',').map(s => s.trim()).filter(s => s.length > 0);
+    if(CURRENT_TIMELINE.length === 0) {
+      CURRENT_TIMELINE = ['Installment 1'];
+    }
+  }
+}
+
+function refreshAllRowDropdowns() {
+  document.querySelectorAll('.fee-row').forEach(row => {
+    const id = row.id.split('-')[1];
+    const ruleSel = row.querySelector('.rule-sel');
+    const previousValue = ruleSel.value;
+    
+    const checkedMonths = Array.from(row.querySelectorAll('.m-chk:checked')).map(cb => cb.value);
+    
+    ruleSel.innerHTML = `
+      <option value="all">All Installments</option>
+      <option value="new_first">New · First Term</option>
+      <option value="old_first">Old · First Term</option>
+      <option value="custom">Custom Selector</option>
+    `;
+    if(['all','new_first','old_first','custom'].includes(previousValue)) {
+      ruleSel.value = previousValue;
+    } else {
+      ruleSel.value = 'all';
+    }
+
+    const mGrid = row.querySelector('.m-grid');
+    const mBoxes = CURRENT_TIMELINE.map(m => {
+      const isChecked = checkedMonths.includes(m) ? 'checked' : '';
+      return `<label class="m-item"><input type="checkbox" value="${m}" class="m-chk" ${isChecked} onchange="onDataChange()"> ${m}</label>`;
+    }).join('');
+    mGrid.innerHTML = mBoxes;
+    
+    handleRule(id);
+  });
+}
+
+function addRow(initialData = null){
+  colCount++;
+  const list=document.getElementById('col-list');
+  const row=document.createElement('div');
+  row.className='fee-row';row.id='row-'+colCount;
+  const mBoxes=CURRENT_TIMELINE.map(m=>`<label class="m-item"><input type="checkbox" value="${m}" class="m-chk" onchange="onDataChange()"> ${m}</label>`).join('');
+  
+  row.innerHTML=`
+    <div><button class="btn-rm" onclick="removeRow(${colCount})" aria-label="Remove row">❌</button></div>
+    <div><input type="text" class="inp erp-label" placeholder="e.g. Tuition Fee" oninput="onDataChange()"></div>
+    <div><input type="text" class="inp excel-col" placeholder="Col ${colCount}" oninput="onDataChange()"></div>
+    <div><select class="sel rule-sel" onchange="handleRule(${colCount});onDataChange()">
+      <option value="all">All Installments</option>
+      <option value="new_first">New · First Term</option>
+      <option value="old_first">Old · First Term</option>
+      <option value="custom">Custom Selector</option>
+    </select></div>
+    <div>
+      <div id="cp-${colCount}" class="hidden">
+        <select class="sel type-sel" onchange="onDataChange()" style="margin-bottom:5px">
+          <option value="both">Both panels</option>
+          <option value="new">NEW only</option>
+          <option value="old">OLD only</option>
+        </select>
+        <div class="m-grid">${mBoxes}</div>
+      </div>
+      <span id="dt-${colCount}" style="font-size:12px;color:#94a3b8;padding-top:5px;display:inline-block">Unified rule</span>
+    </div>`;
+  list.appendChild(row);
+
+  if(initialData) {
+    row.querySelector('.erp-label').value = initialData.erpLabel || '';
+    row.querySelector('.excel-col').value = initialData.excelCol || '';
+    row.querySelector('.rule-sel').value = initialData.rule || 'all';
+    handleRule(colCount);
+    if(initialData.rule === 'custom' && initialData.months) {
+      initialData.months.forEach(m => {
+        const chk = row.querySelector(`.m-chk[value="${m}"]`);
+        if(chk) chk.checked = true;
+      });
+    }
+  }
+  onDataChange();
+}
+
+function removeRow(id){const r=document.getElementById('row-'+id);if(r){r.remove();onDataChange();}}
+
+function handleRule(id){
+  const v=document.querySelector('#row-'+id+' .rule-sel').value;
+  const cp=document.getElementById('cp-'+id);
+  const dt=document.getElementById('dt-'+id);
+  if(v==='custom'){cp.classList.remove('hidden');dt.classList.add('hidden');}
+  else{cp.classList.add('hidden');dt.classList.remove('hidden');}
+}
+
+function processExcelConfigImport() {
+  const rawText = document.getElementById('excelConfigImport').value.trim();
+  if(!rawText) { alert('Please paste tab-separated rows from Excel config map.'); return; }
+  
+  const lines = rawText.split('\n');
+  document.getElementById('col-list').innerHTML = '';
+  
+  lines.forEach(line => {
+    if(!line.trim()) return;
+    const tokens = line.split('\t');
+    const erpLabel = tokens[0]?.trim();
+    const excelCol = tokens[1]?.trim();
+    let rule = tokens[2]?.trim().toLowerCase() || 'all';
+    const rawParams = tokens[3]?.trim();
+    
+    if(!['all', 'new_first', 'old_first', 'custom'].includes(rule)) {
+      rule = 'all';
+    }
+    
+    let months = [];
+    if(rule === 'custom' && rawParams) {
+      months = rawParams.split(',').map(m => m.trim());
+    }
+    
+    if(erpLabel) {
+      addRow({ erpLabel, excelCol, rule, months });
+    }
+  });
+  
+  alert('Excel config map successfully populated into Form engine rows!');
+  document.getElementById('excelConfigImport').value = '';
+}
+
+function onDataChange() {
+  updateStats();
+  generateScript(false);
+}
+
+function updateStats(){
+  let c=0;document.querySelectorAll('.erp-label').forEach(x=>{if(x.value.trim())c++;});
+  document.getElementById('statCols').textContent=c;
+  const raw=document.getElementById('excelInput').value.trim();
+  document.getElementById('statClasses').textContent=raw?raw.split('\n').filter(l=>l.trim()).length:0;
+  const out=document.getElementById('scriptOutput').value;
+  document.getElementById('statLines').textContent=out?out.split('\n').length:0;
+}
+
+function copyScript(){
+  const out=document.getElementById('scriptOutput');
+  out.select();document.execCommand('copy');
+  const btn=document.getElementById('copyBtn');
+  btn.innerHTML='✅ Copied successfully!';
+  btn.style.color='#059669';btn.style.borderColor='#a7f3d0';
+  setTimeout(()=>{btn.innerHTML='📋 Copy compilation matrix';btn.style.color='';btn.style.borderColor='';},2000);
+}
+
+function generateScript(userTrig) {
+  const raw = document.getElementById('excelInput').value.trim();
+  if(!raw){if(userTrig)alert('Excel data stream is empty.');return;}
+  
+  const ruleRows = [];
+  document.querySelectorAll('.fee-row').forEach((row, index) => {
+    const lbl = row.querySelector('.erp-label').value.trim();
+    if(!lbl) return;
+    ruleRows.push({
+      erpLabel: lbl,
+      excelIndex: index + 1,
+      rule: row.querySelector('.rule-sel').value,
+      type: row.querySelector('.type-sel')?.value || 'both',
+      months: [...row.querySelectorAll('.m-chk:checked')].map(c => c.value)
+    });
+  });
+
+  const structuredClassRules = {};
+  raw.split('\n').forEach(line => {
+    const cols = line.split('\t');
+    const className = cols[0]?.trim();
+    if(!className) return;
+    
+    structuredClassRules[className] = ruleRows.map(rule => {
+      return {
+        erpLabel: rule.erpLabel,
+        val: parseFloat(cols[rule.excelIndex]) || 0,
+        rule: rule.rule,
+        type: rule.type,
+        months: rule.months
+      };
+    });
+  });
+  
+  // Compiled output script housing structural table matrix indexing logic
+  const script = `// ==UserScript==
+// @name         ERP Fee Filler v61 RESOLVED
+// @namespace    http://tampermonkey.net/
+// @version      61.0
+// @description  Exact Structural Array-Based ERP Fee Filler using deterministic table index matching
+// @match        *://*/*
+// @grant        none
+// ==/UserScript==
+
+(function () {
+    'use strict';
+
+    const CLASS_RULE_MATRIX = ${JSON.stringify(structuredClassRules, null, 4)};
+    const TIMELINE_TERMS = ${JSON.stringify(CURRENT_TIMELINE)};
+    const FIRST_TERM = TIMELINE_TERMS[0];
+
+    function cleanText(txt) {
+        return (txt || '')
+            .replace(/[\\u00A0\\u200B\\u200C\\u200D\\uFEFF]/g, ' ')
+            .replace(/\\s+/g, ' ').trim();
+    }
+
+    function setInputValue(input, value) {
+        if (!input) return;
+        try {
+            const ns = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
+            ns.call(input, value);
+        } catch(e) { input.value = value; }
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    // Gathers all fee-bearing data entry matrices across primary document scope and sub-frames
+    function getAllTargetTables(doc = document) {
+        let list = [...doc.querySelectorAll('table')];
+        doc.querySelectorAll('iframe, frame').forEach(f => {
+            try {
+                if (f.contentDocument) {
+                    list = list.concat(getAllTargetTables(f.contentDocument));
+                }
+            } catch (e) {}
+        });
+        // Filtering ensures layout structure tables without target input arrays are omitted
+        return list.filter(t => t.querySelectorAll('input').length > 2);
+    }
+
+    // STRICT STEP LOCK: Maps tables by exact appearance order index to remove label overlap completely
+    function getPanel(type) {
+        const tables = getAllTargetTables();
+        if (tables.length === 0) return null;
+        
+        // OLD button strictly processes Table 1, NEW button strictly processes Table 2
+        if (type === 'OLD') return tables[0];
+        if (type === 'NEW') return tables[1] || tables[0];
+        return null;
+    }
+
+    function getHeaderMap(panel, requiredLabels) {
+        const map = {};
+        [...panel.querySelectorAll('tr')].forEach(row => {
+            [...row.querySelectorAll('th,td')].forEach((cell, idx) => {
+                const txt = cleanText(cell.innerText);
+                if (requiredLabels.includes(txt)) {
+                    if (!map[txt]) map[txt] = [];
+                    if (!map[txt].includes(idx)) map[txt].push(idx);
+                }
+            });
+        });
+        return map;
+    }
+
+    function fillFees(type, className) {
+        const panel = getPanel(type);
+        if (!panel) { alert(type + ' target entry table not found on page.'); return; }
+        
+        const activeRules = CLASS_RULE_MATRIX[className];
+        if (!activeRules) { alert('Class rules data matrix not found'); return; }
+        
+        const requiredLabels = activeRules.map(r => r.erpLabel);
+        const headerMap = getHeaderMap(panel, requiredLabels);
+        
+        [...panel.querySelectorAll('tr')].forEach(row => {
+            const fc = row.querySelector('td');
+            if (!fc) return;
+            
+            const termRowLabel = cleanText(fc.innerText);
+            if (!TIMELINE_TERMS.includes(termRowLabel)) return;
+            const cells = [...row.children];
+            
+            activeRules.forEach(cfg => {
+                // Pre-execution Isolation Layer: Skip configuration rows misaligned with current button role
+                if (cfg.type === 'new' && type !== 'NEW') return;
+                if (cfg.type === 'old' && type !== 'OLD') return;
+
+                const columnIndices = headerMap[cfg.erpLabel];
+                if (!columnIndices || columnIndices.length === 0) return;
+                
+                columnIndices.forEach(colIdx => {
+                    const td = cells[colIdx]; if (!td) return;
+                    
+                    let shouldApply = false;
+                    if (cfg.rule === 'all') shouldApply = true;
+                    else if (cfg.rule === 'new_first' && type === 'NEW' && termRowLabel === FIRST_TERM) shouldApply = true;
+                    else if (cfg.rule === 'old_first' && type === 'OLD' && termRowLabel === FIRST_TERM) shouldApply = true;
+                    else if (cfg.rule === 'custom' && cfg.months.includes(termRowLabel)) {
+                        if (cfg.type === 'both' || (cfg.type === 'new' && type === 'NEW') || (cfg.type === 'old' && type === 'OLD')) {
+                            shouldApply = true;
+                        }
+                    }
+                    
+                    if (shouldApply) {
+                        const inputs = [...td.querySelectorAll('input')];
+                        const cb = inputs.find(i => i.type === 'checkbox');
+                        const ti = inputs.find(i => i.type !== 'checkbox');
+                        
+                        const amount = cfg.val;
+                        if (cb) { 
+                            cb.checked = true; 
+                            cb.dispatchEvent(new Event('change', { bubbles: true })); 
+                        }
+                        if (ti) setInputValue(ti, amount);
+                    }
+                });
+            });
+        });
+        alert(type + ' Fees Processed successfully via Structural Table Index Matching.');
+    }
+
+    function askClass(type) {
+        const old = document.getElementById('erp-popup'); if (old) old.remove();
+        const popup = document.createElement('div');
+        popup.id = 'erp-popup';
+        Object.assign(popup.style,{
+            position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',
+            background:'#fff',padding:'24px',width:'280px',borderRadius:'14px',
+            boxShadow:'0 20px 40px rgba(0,0,0,0.12)',border:'1px solid #e2e8f0',
+            zIndex:'999999',fontFamily:'system-ui,sans-serif',color:'#1e293b'
+        });
+        popup.innerHTML=
+            '<div style="font-weight:700;font-size:15px;margin-bottom:14px;text-align:center">'+type+' selection</div>'+
+            '<select id="erp-class" style="width:100%;padding:10px;margin-bottom:16px;border-radius:8px;background:#fff;border:1px solid #e2e8f0;color:#1e293b;font-size:13px">'+
+            Object.keys(CLASS_RULE_MATRIX).map(c=>'<option>'+c+'</option>').join('')+
+            '</select>'+
+            '<div style="display:flex;gap:10px">'+
+            '<button id="erp-fill" style="flex:1;padding:10px;border:none;border-radius:8px;background:#6366f1;color:#fff;font-weight:700;cursor:pointer;font-size:13px">Execute fill</button>'+
+            '<button id="erp-cancel" style="flex:1;padding:10px;border:none;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;color:#64748b;cursor:pointer;font-size:13px">Cancel</button>'+
+            '</div>';
+        document.body.appendChild(popup);
+        document.getElementById('erp-fill').onclick=()=>{fillFees(type,document.getElementById('erp-class').value);popup.remove();};
+        document.getElementById('erp-cancel').onclick=()=>popup.remove();
+    }
+
+    function createButton(text, bg, right) {
+        const btn = document.createElement('div');
+        btn.innerText = text;
+        Object.assign(btn.style,{
+            position:'fixed',bottom:'24px',right:right,width:'54px',height:'54px',
+            borderRadius:'10px',background:bg,color:'#fff',
+            display:'flex',alignItems:'center',justifyContent:'center',
+            fontWeight:'700',fontSize:'12px',cursor:'pointer',zIndex:999999,
+            boxShadow:'0 6px 16px rgba(0,0,0,0.12)',fontFamily:'system-ui,sans-serif',
+            transition:'transform 0.2s'
+        });
+        btn.onmouseover=()=>btn.style.transform='translateY(-2px)';
+        btn.onmouseout=()=>btn.style.transform='none';
+        btn.onclick=()=>askClass(text);
+        document.body.appendChild(btn);
+    }
+
+    createButton('OLD','#64748b','90px');
+    createButton('NEW','#6366f1','24px');
+})();`;
+
+  document.getElementById('scriptOutput').value=script;
+  document.getElementById('result-section').classList.remove('hidden');
+  document.getElementById('guide-card').classList.add('hidden');
+  updateStats();
+  if(userTrig)document.getElementById('result-section').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
